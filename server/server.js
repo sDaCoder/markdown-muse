@@ -23,17 +23,17 @@ app.get('/api', async (req, res) => {
 app.get('/api/:textId', async (req, res) => {
     const { textId } = req.params;
     try {
-        const text = await Text.findOne({ _id: textId });
-        if(!text) {
+        const textObj = await Text.findOne({ _id: textId });
+        if(!textObj) {
             return res.status(404).json({
                 message: 'Text not found',
             })
         }
 
-        console.log(text);
+        console.log(textObj);
         res.status(200).json({ 
             message: 'This is the API to fetch a specific text',
-            text 
+            textObj 
         });
     } catch (error) {
         res.status(500).json({

@@ -1,11 +1,15 @@
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
 import { ScrollText } from 'lucide-react'
+import { useSidebar } from '../ui/sidebar'
 
 const Navbar = () => {
+    const { toggleSidebar } = useSidebar()
     return (
         <nav className='flex items-center justify-around p-4 gap-4 bg-zinc-100 border-b-8 border-zinc-300'>
-            <div className='flex items-center gap-2 cursor-pointer'>
+            <div 
+                className='flex items-center gap-2 cursor-pointer'
+                onClick={toggleSidebar}
+            >
                 <ScrollText className='text-zinc-400' size={32} />
                 <h1 className='text-zinc-400 text-2xl font-bold'>Markdown Muse</h1>
             </div>

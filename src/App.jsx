@@ -7,19 +7,25 @@ import Navbar from '@/components/Navbar/Navbar'
 import Markdown from 'react-markdown'
 import { useState } from 'react'
 import { useEffect } from 'react'
+import { useRef } from 'react'
 import copy from 'copy-to-clipboard'
 import { toast } from 'sonner'
+import axios from 'axios'
 
 function App() {
-  const storedText = localStorage.getItem('markdownText')
-  const [markdownText, setMarkdownText] = useState(storedText)
+  // const storedText = localStorage.getItem('markdownText')
+  // const [markdownText, setMarkdownText] = useState(storedText)
+  const [markdownText, setMarkdownText] = useState('')
   const [copyText, setCopyText] = useState('')
   const [copyIcon, setCopyIcon] = useState(true)
+  const [textId, setTextId] = useState(null)
+  const [lastSaved, setLastSaved] = useState(null)
+  const timerRef = useRef(null)
 
-  useEffect(() => {
-    localStorage.setItem('markdownText', markdownText)
-    setCopyIcon(true)
-  }, [markdownText])
+  // useEffect(() => {
+  //   localStorage.setItem('markdownText', markdownText)
+  //   setCopyIcon(true)
+  // }, [markdownText])
 
   const handleCopy = () => {
     if (markdownText) {
@@ -31,6 +37,58 @@ function App() {
       toast.error('No markdown text to copy')
     }
   }
+
+  // fetching the markdown text from the server on initial render
+  useEffect(() => {
+    (
+      async () => {
+        try {
+          const res = await axios.get('http://localhost:3000/api')
+          if (res.data.texts && res.data.texts.length > 0) {
+            setMarkdownText(res.data.texts[0].text)
+            setTextId(res.data.texts[0]._id)
+          }
+        } catch (error) {
+          toast.error('Error fetching markdown from the server')
+        }
+      }
+    )()
+  }, [])
+
+  useEffect(() => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    if (markdownText === '') return
+
+    timerRef.current = setTimeout(async () => {
+      const toastId = toast.loading('Saving...')
+      try {
+        if (textId) {
+          // Update existing text
+          await axios.patch(`http://localhost:3000/api/${textId}`, { 
+            text: markdownText
+          })
+        } else {
+          // Create new text
+          const res = await axios.post('http://localhost:3000/api', { 
+            text: markdownText 
+          })
+          // Save the new textId
+          const getRes = await axios.get('http://localhost:3000/api')
+          if (getRes.data.texts && getRes.data.texts.length > 0) {
+            setTextId(getRes.data.texts[0]._id)
+          }
+        }
+        setCopyIcon(true)
+        const now = new Date()
+        setLastSaved(now)
+        toast.success(`Saved to database at ${now.toLocaleTimeString()}`, { id: toastId })
+      } catch (err) {
+        toast.error('Failed to save markdown', { id: toastId })
+      }
+    }, 3000)
+
+    return () => clearTimeout(timerRef.current)
+  }, [markdownText])
 
   return (
     <>
@@ -91,7 +149,7 @@ function App() {
               <CardFooter>
                 <Save className='mx-2'/>
                 <p className='text-xs text-muted-foreground'>
-                  Last saved at {new Date().toLocaleString()}
+                  Last saved at {new Date(lastSaved).toLocaleString()}
                 </p>
               </CardFooter>
             </Card>
