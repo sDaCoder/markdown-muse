@@ -3,15 +3,20 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import { Toaster } from 'sonner'
 import App from './App.jsx'
-import { SidebarProvider } from "@/components/ui/sidebar"
-import { AppSidebar } from './components/app-sidebar/app-sidebar.js'
+import { ClerkProvider } from '@clerk/clerk-react'
+
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Add your Clerk Publishable Key to the .env file')
+}
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <SidebarProvider defaultOpen={true}>
-      <AppSidebar/>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
       <Toaster />
-      <main className="flex-1 "><App /></main>
-    </SidebarProvider>
+      <App />
+    </ClerkProvider>
   </StrictMode>,
 )

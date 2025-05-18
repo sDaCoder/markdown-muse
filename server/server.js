@@ -45,14 +45,16 @@ app.get('/api/:textId', async (req, res) => {
 
 app.post('/api', async (req, res) => {
     const { text } = req.body;
-    const textObj = new Text({ text });
+    const textObj = new Text({ text, lastSaved: new Date() });
     await textObj.save();
     console.log(textObj);
 
     res.status(200).json({ 
         status: 'success',
         message: 'Read the text from the reuqest object',
-        text
+        text: textObj.text,
+        lastSaved: textObj.lastSaved,
+        _id: textObj._id
     });
 })
 
@@ -66,15 +68,19 @@ app.patch('/api/:textId', async (req, res) => {
                 message: 'Text not found',
             })
         }
-
+        console.log('PATCH Request activated');
+        
         console.log("Old text: ", textObj);
         textObj.text = text;
+        textObj.lastSaved = new Date();
         await textObj.save();
         console.log("New text: ", textObj);
         res.status(200).json({
             status: 'success',
             message: 'Text updated successfully',
-            text
+            text: textObj.text,
+            lastSaved: textObj.lastSaved,
+            _id: textObj._id
         })
     } catch (error) {
         res.status(500).json({
