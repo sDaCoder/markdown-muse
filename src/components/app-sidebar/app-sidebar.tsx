@@ -1,123 +1,188 @@
-import { Brush, ChartArea, ScrollText } from "lucide-react"
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar"
-import { Plus } from "lucide-react"
-import { Home } from "lucide-react"
-import { Phone } from "lucide-react"
-import { Info } from "lucide-react"
-import { NavLink, useNavigate } from "react-router-dom"
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/clerk-react"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroupContent, SidebarHeader } from "../ui/sidebar"
+import { SignedIn, SignedOut } from "@clerk/clerk-react"
 import SidebarUser from "../SidebarUser/SidebarUser"
-import { useEffect, useState } from "react"
-import axios from "axios"
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/Dialog"
-import { Label } from "../ui/label"
-import { Input } from "../ui/input"
-import { Button } from "../ui/button"
-import { text } from "stream/consumers"
+import SidebarTopTitle from "../SidebarTopTitle/SidebarTopTitle"
+import SidebarMarkdownHistory from "../SidebarMarkdownHistory/SidebarMarkdownHistory"
+import SidebarOtherSettings from "../SidebarOtherSettings/SidebarOtherSettings"
 
 export function AppSidebar() {
-  const [markdownHistory, setMarkdownHistory] = useState<{ _id: string; text: string; textTitle: string }[]>([]);
-  const [open, setOpen] = useState(false)
-  const [title, setTitle] = useState("Untitled Text")
-  const navigate = useNavigate()
+  // const [markdownHistory, setMarkdownHistory] = useState<{ _id: string; text: string; textTitle: string }[]>([]);
+  // const [open, setOpen] = useState(false)
+  // const [title, setTitle] = useState("Untitled Text")
+  // const [editId, setEditId] = useState<string | null>(null)
+  // const navigate = useNavigate()
+  // const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get('http://localhost:3000/api/')
-        setMarkdownHistory(res.data.texts || [])
-      } catch (e) {
-        console.log(e);
-        setMarkdownHistory([])
-      }
-    })()
-  }, [open]) // Refetch only when the dialog closes
+  // useEffect(() => {
+  //   (async () => {
+  //     try {
+  //       const res = await axios.get('http://localhost:3000/api/')
+  //       setMarkdownHistory(res.data.texts || [])
+  //     } catch (e) {
+  //       console.log(e);
+  //       setMarkdownHistory([])
+  //     }
+  //   })()
+  // }, [open]) // Refetch only when the dialog closes
 
-  const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    try {
-      const res = await axios.post('http://localhost:3000/api/', {
-        textTitle: title,
-        text: ''
-      })
-      setOpen(false)
-      setTitle("Untitled Text")
-      setMarkdownHistory(prev => [...prev, {
-        _id: res.data._id,
-        text: "",
-        textTitle: res.data.textTitle
-      }])
-      navigate(`/editor/${res.data._id}`)
-    } catch (e) {
-      console.log(e);
-    }
-  }
+  // const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
+  //   e.preventDefault()
+  //   if (editId) {
+  //     try {
+  //       const res = await axios.patch(`http://localhost:3000/api/${editId}`, {
+  //         textTitle: title
+  //       })
+  //       setMarkdownHistory(prev =>
+  //         prev.map(md =>
+  //           md._id === editId ? { ...md, textTitle: res.data.textTitle } : md
+  //         )
+  //       )
+  //       setOpen(false)
+  //       setEditId(null)
+  //       setTitle("Untitled Text")
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   }
+  //   else {
+  //     try {
+  //       const res = await axios.post('http://localhost:3000/api/', {
+  //         textTitle: title,
+  //         text: ''
+  //       })
+  //       setOpen(false)
+  //       setTitle("Untitled Text")
+  //       setMarkdownHistory(prev => [...prev, {
+  //         _id: res.data._id,
+  //         text: "",
+  //         textTitle: res.data.textTitle
+  //       }])
+  //       navigate(`/editor/${res.data._id}`)
+  //     } catch (e) {
+  //       console.log(e);
+  //     }
+  //   }
+  // }
+
+  // const handleDeleteText = async (textId: string) => {
+  //   try {
+  //     await axios.delete(`http://localhost:3000/api/${textId}`)
+  //     setMarkdownHistory(prev => prev.filter(md => md._id !== textId))
+  //     // If the current route is the one being deleted, redirect to home or first available markdown
+  //     if (window.location.pathname === `/editor/${textId}`) {
+  //       if (markdownHistory.length > 1) {
+  //         const next = markdownHistory.find(md => md._id !== textId)
+  //         if (next) {
+  //           navigate(`/editor/${next._id}`)
+  //         }
+  //         else {
+  //           navigate('/')
+  //         }
+  //       }
+  //       else {
+  //         navigate('/')
+  //       }
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }
+
+  // // Open dialog for editing
+  // const handleEditTitle = (id: string, currentTitle: string) => {
+  //   setEditId(id)
+  //   setTitle(currentTitle)
+  //   setOpen(true)
+  //   setTimeout(() => {
+  //     inputRef.current?.focus()
+  //   }, 100)
+  // }
 
   return (
     <div className="absolute">
       <Sidebar variant="floating" collapsible="icon">
 
-        <SidebarHeader>
-          <div className="flex items-center justify-start">
-            <div>
-              <ScrollText size={28} />
-            </div>
-            <SidebarGroupLabel>
-              <div className="ml-2 text-sm font-medium overflow-auto">Markdown Muse</div>
-            </SidebarGroupLabel>
-          </div>
-        </SidebarHeader>
+        <SidebarHeader> <SidebarTopTitle /> </SidebarHeader>
 
         <SidebarContent>
-          <SidebarGroup>
+          <SidebarMarkdownHistory />
+          {/* <SidebarGroup>
             <SidebarGroupLabel>Your Markdown History</SidebarGroupLabel>
             <SidebarGroupAction title="Add new Markdown">
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger><Plus className="w-4 h-4" /> <span className="sr-only">Add new Markdown</span></DialogTrigger>
+              <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) { setEditId(null); setTitle("Untitled Text") } }}>
+                <DialogTrigger asChild>
+                  <Plus className="w-4 h-4" />
+                </DialogTrigger>
                 <DialogContent>
                   <form onSubmit={handleSaveTitle}>
                     <DialogHeader>
-                      <DialogTitle className="py-4">Enter your Markdown title</DialogTitle>
-                      {/* <DialogDescription>This will set the title of your new Markdown</DialogDescription> */}
+                      <DialogTitle className="py-4">
+                        {editId ? "Edit Markdown Title" : "Enter your Markdown title"}
+                      </DialogTitle>
                     </DialogHeader>
                     <div className="flex items-center space-x-2">
                       <div className="grid flex-1 gap-2">
-                        <Label htmlFor="title" className="sr-only">Add Page Title</Label>
+                        <Label htmlFor="title" className="sr-only">
+                          {editId ? "Edit Page Title" : "Add Page Title"}
+                        </Label>
                         <Input
                           id="title"
-                          defaultValue="Untitled Text"
+                          ref={inputRef}
+                          value={title}
                           onChange={e => setTitle(e.target.value)}
                           autoFocus
                         />
                       </div>
                     </div>
-                    <DialogFooter className="py-4"><Button type="submit">Save Title</Button></DialogFooter>
+                    <DialogFooter className="py-4">
+                      <Button type="submit">{editId ? "Save Changes" : "Save Title"}</Button>
+                    </DialogFooter>
                   </form>
                 </DialogContent>
               </Dialog>
             </SidebarGroupAction>
             <SidebarGroupContent>
               <SidebarMenu>
-                {markdownHistory.map((md, key) => (
+                {markdownHistory.map(md => (
                   <SidebarMenuItem key={md._id}>
                     <NavLink to={`/editor/${md._id}`}>
                       {({ isActive }) =>
                         <SidebarMenuButton asChild isActive={isActive}>
                           <div>
                             <Brush />
-                            {/* <span>{md.text?.slice(0, 25) + "..." || "Untitled"}</span> */}
                             <span>{md?.textTitle}</span>
                           </div>
                         </SidebarMenuButton>
                       }
                     </NavLink>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <SidebarMenuAction>
+                          <MoreHorizontal />
+                        </SidebarMenuAction>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent side="right" align="start">
+                        <DropdownMenuItem
+                          onClick={() => handleEditTitle(md._id, md.textTitle)}
+                        >
+                          <span>Edit Markdown Title</span>
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteText(md._id)}
+                          className="text-red-600 cursor-pointer font-semibold"
+                        >
+                          <span>Delete Markdown</span>
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>
-          </SidebarGroup>
+          </SidebarGroup> */}
 
-          <SidebarGroup>
+          <SidebarOtherSettings />
+          {/* <SidebarGroup>
             <SidebarGroupLabel>Other Settings</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -138,14 +203,11 @@ export function AppSidebar() {
                 </NavLink>
               </SidebarMenu>
             </SidebarGroupContent>
-          </SidebarGroup>
+          </SidebarGroup> */}
         </SidebarContent>
 
         <SidebarFooter>
-
-          <SignedIn>
-            <SidebarUser />
-          </SignedIn>
+          <SignedIn> <SidebarUser /> </SignedIn>
 
           <SignedOut>
             {/* <SidebarGroupLabel>User Actions</SidebarGroupLabel> */}

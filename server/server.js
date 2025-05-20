@@ -62,7 +62,7 @@ app.post('/api', async (req, res) => {
 
 app.patch('/api/:textId', async (req, res) => {
     const { textId } = req.params;
-    const { text } = req.body;
+    const { text, textTitle } = req.body;
     try {
         const textObj = await Text.findOne({ _id: textId });
         if(!textObj) {
@@ -73,7 +73,8 @@ app.patch('/api/:textId', async (req, res) => {
         console.log('PATCH Request activated');
         
         console.log("Old text: ", textObj);
-        textObj.text = text;
+        if (text !== undefined) textObj.text = text;
+        if (textTitle !== undefined) textObj.textTitle = textTitle;
         textObj.lastSaved = new Date();
         await textObj.save();
         console.log("New text: ", textObj);
@@ -81,6 +82,7 @@ app.patch('/api/:textId', async (req, res) => {
             status: 'success',
             message: 'Text updated successfully',
             text: textObj.text,
+            textTitle: textObj.textTitle,
             lastSaved: textObj.lastSaved,
             _id: textObj._id
         })
