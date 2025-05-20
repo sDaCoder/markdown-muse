@@ -45,14 +45,16 @@ app.get('/api/:textId', async (req, res) => {
 
 app.post('/api', async (req, res) => {
     const { text } = req.body;
-    const textObj = new Text({ text, lastSaved: new Date() });
+    const textTitle = req.body.textTitle || 'Untitled Text';
+    const textObj = new Text({ text, textTitle, lastSaved: new Date() });
     await textObj.save();
     console.log(textObj);
 
     res.status(200).json({ 
         status: 'success',
-        message: 'Read the text from the reuqest object',
+        message: 'Adding new text to the database',
         text: textObj.text,
+        textTitle: textObj.textTitle,
         lastSaved: textObj.lastSaved,
         _id: textObj._id
     });

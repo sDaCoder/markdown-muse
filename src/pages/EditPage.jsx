@@ -4,10 +4,12 @@ import { useEffect } from 'react'
 import { useRef } from 'react'
 import { toast } from 'sonner'
 import axios from 'axios'
+import { useParams } from 'react-router-dom'
 
 const EditPage = () => {
     // const storedText = localStorage.getItem('markdownText')
     // const [markdownText, setMarkdownText] = useState(storedText)
+    const { textId: urlTextId } = useParams()
     const [initialText, setInitialText] = useState('')
     const [markdownText, setMarkdownText] = useState('')
     const [copyIcon, setCopyIcon] = useState(true)
@@ -27,12 +29,22 @@ const EditPage = () => {
         (
             async () => {
                 try {
-                    const res = await axios.get('http://localhost:3000/api')
-                    if (res.data.texts && res.data.texts.length > 0) {
-                        setMarkdownText(res.data.texts[0].text)
-                        setInitialText(res.data.texts[0].text)
-                        setTextId(res.data.texts[0]._id)
-                        setLastSaved(res.data.texts[0].lastSaved)
+                    if (urlTextId) {
+                        const res = await axios.get(`http://localhost:3000/api/${urlTextId}`)
+                        if(res.data.textObj) {
+                            setMarkdownText(res.data.textObj.text)
+                            setInitialText(res.data.textObj.text)
+                            setTextId(res.data.textObj._id)
+                            setLastSaved(res.data.textObj.lastSaved)
+                        }
+                    } else {
+                        const res = await axios.get('http://localhost:3000/api')
+                        if (res.data.texts && res.data.texts.length > 0) {
+                            setMarkdownText(res.data.texts[0].text)
+                            setInitialText(res.data.texts[0].text)
+                            setTextId(res.data.texts[0]._id)
+                            setLastSaved(res.data.texts[0].lastSaved)
+                        }
                     }
                     setHasLoaded(true)
                 } catch (error) {
@@ -40,7 +52,7 @@ const EditPage = () => {
                 }
             }
         )()
-    }, [])
+    }, [urlTextId])
 
     useEffect(() => {
         if (!hasLoaded) return
@@ -82,7 +94,7 @@ const EditPage = () => {
         }, 3000)
 
         return () => clearTimeout(timerRef.current)
-    }, [markdownText, hasLoaded])
+    }, [markdownText, hasLoaded, textId])
 
     return (
         <>

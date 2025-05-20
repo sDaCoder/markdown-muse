@@ -31,6 +31,16 @@ function App() {
                   </SignedOut>
                 </>
               } />
+              <Route path='/editor/:textId' element={
+                <>
+                  <SignedIn>
+                    <EditPage/>
+                  </SignedIn>
+                  <SignedOut>
+                    <RedirectToSignIn/>
+                  </SignedOut>
+                </>
+              } />
               {/* <Route path="/sign-in" element={<SignIn />} />
               <Route path="/sign-up" element={<SignUp />} /> */}
             </Routes>
