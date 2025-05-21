@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const textSchema = new mongoose.Schema({
+export const textSchema = new mongoose.Schema({
     textTitle: {
         type: String,
         default: "Untitled Text"
@@ -8,7 +8,7 @@ const textSchema = new mongoose.Schema({
     text: String,
     lastSaved: {
         type: Date,
-        default: Date.now
+        default: () => new Date()
     }
 })
 

@@ -1,8 +1,9 @@
 import { NavLink } from "react-router-dom"
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar"
 import { Home, Info, Phone } from "lucide-react"
+import React from "react"
 
-const SidebarOtherSettings = () => {
+const SidebarOtherSettings: React.FC = () => {
     return (
         <>
             <SidebarGroup>

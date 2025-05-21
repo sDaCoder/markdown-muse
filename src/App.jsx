@@ -1,4 +1,4 @@
-import Navbar from '@/components/Navbar/Navbar'
+import Navbar from './components/Navbar/Navbar'
 import { SidebarProvider } from './components/ui/sidebar'
 import { AppSidebar } from './components/app-sidebar/app-sidebar'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'

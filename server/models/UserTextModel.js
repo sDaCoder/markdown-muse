@@ -1,9 +1,16 @@
 import mongoose from "mongoose";
-import Text from "./TextModel.js";
+import { textSchema, Text } from "./TextModel.js";
 
 const userTextSchema = new mongoose.Schema({
-    userID: String,
-    texts: [Text.Schema]
+    userId: {
+        type: String,
+        required: true,
+        message: 'Clerk did not provide us the UserId from the Client side'
+    },
+    texts: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Text'
+    }]
 })
-    
+
 export const UserText = mongoose.model('UserText', userTextSchema);

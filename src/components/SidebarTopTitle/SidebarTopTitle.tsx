@@ -1,7 +1,7 @@
 import { ScrollText } from 'lucide-react'
 import { SidebarGroupLabel } from '../ui/sidebar'
 
-const SidebarTopTitle = () => {
+const SidebarTopTitle: React.FC = () => {
     return (
         <>
             <div className="flex items-center justify-start">

@@ -1,21 +1,29 @@
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
-import { Card, CardContent, CardFooter } from '@/components/ui/card'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from './../ui/tabs'
+import { Card, CardContent, CardFooter } from './../ui/card'
 import { Save, ScrollText, Copy, Check } from 'lucide-react'
-import { Textarea } from '@/components/ui/textarea'
-import { Button } from '@/components/ui/button'
+import { Textarea } from './../ui/textarea'
+import { Button } from './../ui/button'
 import Markdown from 'react-markdown'
 import { useState } from 'react'
 import copy from 'copy-to-clipboard'
 import { toast } from 'sonner'
 
-const TabsArea = ({
+interface TabsAreaProps {
+    markdownText: string
+    setMarkdownText: (markdownText: string) => void
+    copyIcon: boolean
+    setCopyIcon: (copyIcon: boolean) => void
+    lastSaved: Date
+}
+
+const TabsArea: React.FC<TabsAreaProps> = ({
     markdownText,
     setMarkdownText,
     copyIcon,
     setCopyIcon,
     lastSaved
 }) => {
-    const [copyText, setCopyText] = useState('')
+    const [copyText, setCopyText] = useState<string>('')
     const handleCopy = () => {
     if (markdownText) {
       setCopyText(markdownText)

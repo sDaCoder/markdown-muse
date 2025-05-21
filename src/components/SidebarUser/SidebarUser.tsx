@@ -2,7 +2,7 @@ import { Avatar, AvatarImage, AvatarFallback } from '../ui/avatar'
 import { SidebarGroupLabel, SidebarMenuButton } from '../ui/sidebar'
 import { useUser } from '@clerk/clerk-react'
 
-const SidebarUser = () => {
+const SidebarUser: React.FC = () => {
     const { user } = useUser()
     // console.log(user);
     

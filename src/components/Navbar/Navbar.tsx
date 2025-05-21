@@ -1,10 +1,9 @@
-import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { ScrollText } from 'lucide-react'
 import { useSidebar } from '../ui/sidebar'
 import { Button } from '../ui/button'
 import { SignedIn, SignedOut, SignIn, SignInButton, SignUp, SignUpButton, UserButton } from '@clerk/clerk-react'
 
-const Navbar = () => {
+const Navbar: React.FC = () => {
     const { toggleSidebar } = useSidebar()
     return (
         <nav className='flex items-center justify-around p-4 gap-4 bg-zinc-100 border-b-8 border-zinc-300'>

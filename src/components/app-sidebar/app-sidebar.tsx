@@ -1,11 +1,14 @@
-import { Sidebar, SidebarContent, SidebarFooter, SidebarGroupContent, SidebarHeader } from "../ui/sidebar"
-import { SignedIn, SignedOut } from "@clerk/clerk-react"
+import { Sidebar, SidebarContent, SidebarFooter, SidebarGroupContent, SidebarHeader, SidebarMenuButton, useSidebar } from "../ui/sidebar"
+import { SignedIn, SignedOut, SignInButton } from "@clerk/clerk-react"
 import SidebarUser from "../SidebarUser/SidebarUser"
 import SidebarTopTitle from "../SidebarTopTitle/SidebarTopTitle"
 import SidebarMarkdownHistory from "../SidebarMarkdownHistory/SidebarMarkdownHistory"
 import SidebarOtherSettings from "../SidebarOtherSettings/SidebarOtherSettings"
+import { Button } from "../ui/button"
+import React from "react"
 
-export function AppSidebar() {
+export const AppSidebar: React.FC = () => {
+  const { open } = useSidebar()
   // const [markdownHistory, setMarkdownHistory] = useState<{ _id: string; text: string; textTitle: string }[]>([]);
   // const [open, setOpen] = useState(false)
   // const [title, setTitle] = useState("Untitled Text")
@@ -105,6 +108,30 @@ export function AppSidebar() {
         <SidebarHeader> <SidebarTopTitle /> </SidebarHeader>
 
         <SidebarContent>
+          <SidebarOtherSettings />
+          {/* <SidebarGroup>
+            <SidebarGroupLabel>Other Settings</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <NavLink to='/'>
+                  {({ isActive }) =>
+                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Home /><span>Home</span></div></SidebarMenuButton></SidebarMenuItem>
+                  }
+                </NavLink>
+                <NavLink to='/about'>
+                  {({ isActive }) =>
+                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Info /><span>About</span></div></SidebarMenuButton></SidebarMenuItem>
+                  }
+                </NavLink>
+                <NavLink to='/contact'>
+                  {({ isActive }) =>
+                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Phone /><span>Contact Us</span></div></SidebarMenuButton></SidebarMenuItem>
+                  }
+                </NavLink>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup> */}
+
           <SidebarMarkdownHistory />
           {/* <SidebarGroup>
             <SidebarGroupLabel>Your Markdown History</SidebarGroupLabel>
@@ -181,29 +208,6 @@ export function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup> */}
 
-          <SidebarOtherSettings />
-          {/* <SidebarGroup>
-            <SidebarGroupLabel>Other Settings</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                <NavLink to='/'>
-                  {({ isActive }) =>
-                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Home /><span>Home</span></div></SidebarMenuButton></SidebarMenuItem>
-                  }
-                </NavLink>
-                <NavLink to='/about'>
-                  {({ isActive }) =>
-                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Info /><span>About</span></div></SidebarMenuButton></SidebarMenuItem>
-                  }
-                </NavLink>
-                <NavLink to='/contact'>
-                  {({ isActive }) =>
-                    <SidebarMenuItem><SidebarMenuButton asChild isActive={isActive}><div><Phone /><span>Contact Us</span></div></SidebarMenuButton></SidebarMenuItem>
-                  }
-                </NavLink>
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup> */}
         </SidebarContent>
 
         <SidebarFooter>
@@ -215,7 +219,7 @@ export function AppSidebar() {
               {/* <SidebarMenu>
                 <SidebarMenuItem> */}
               {/* <Button className='rounded'>Log In</Button> */}
-              {/* <SidebarMenuButton asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton> */}
+              {open && <SidebarMenuButton asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton>}
               {/* </SidebarMenuItem>
               </SidebarMenu> */}
             </SidebarGroupContent>
