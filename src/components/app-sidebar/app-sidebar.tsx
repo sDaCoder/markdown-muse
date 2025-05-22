@@ -5,7 +5,6 @@ import SidebarTopTitle from "../SidebarTopTitle/SidebarTopTitle"
 import SidebarMarkdownHistory from "../SidebarMarkdownHistory/SidebarMarkdownHistory"
 import SidebarOtherSettings from "../SidebarOtherSettings/SidebarOtherSettings"
 import { Button } from "../ui/button"
-import React from "react"
 
 export const AppSidebar: React.FC = () => {
   const { open } = useSidebar()
@@ -103,7 +102,10 @@ export const AppSidebar: React.FC = () => {
 
   return (
     <div className="absolute">
-      <Sidebar variant="floating" collapsible="icon">
+      <Sidebar
+        // variant="floating"
+        collapsible="icon"
+      >
 
         <SidebarHeader> <SidebarTopTitle /> </SidebarHeader>
 

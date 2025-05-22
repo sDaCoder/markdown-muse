@@ -20,15 +20,15 @@ interface MarkdownType {
 
 const SidebarMarkdownHistory: React.FC = () => {
     const [markdownHistory, setMarkdownHistory] = useState<MarkdownType[]>([]);
-    // const [markdownHistory, setMarkdownHistory] = useState<{ _id: string; text: string; textTitle: string }[]>([]);
     const [open, setOpen] = useState<boolean>(false)
     const [title, setTitle] = useState<string>("Untitled Text")
     const [editId, setEditId] = useState<string | null>(null)
     const navigate: NavigateFunction = useNavigate()
     const inputRef = useRef<HTMLInputElement>(null);
-    const { user } = useUser()
+    const { user, isLoaded, isSignedIn } = useUser()
 
     useEffect(() => {
+        if (!isLoaded || !isSignedIn) return // Wait until the user is signed in
         (async () => {
             try {
                 const res = await axios.get(`http://localhost:3000/api/${user?.id}`)
@@ -38,7 +38,7 @@ const SidebarMarkdownHistory: React.FC = () => {
                 setMarkdownHistory([])
             }
         })()
-    }, [open]) // Refetch only when the dialog closes
+    }, [open, isLoaded, isSignedIn, user?.id]) // Refetch only when the dialog closes
 
     const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -81,7 +81,7 @@ const SidebarMarkdownHistory: React.FC = () => {
 
     const handleDeleteText = async (textId: string) => {
         try {
-            await axios.delete(`http://localhost:3000/api/${textId}`)
+            await axios.delete(`http://localhost:3000/api/${user?.id}/${textId}`)
             setMarkdownHistory(prev => prev.filter(md => md._id !== textId))
             // If the current route is the one being deleted, redirect to home or first available markdown
             if (window.location.pathname === `/editor/${textId}`) {
