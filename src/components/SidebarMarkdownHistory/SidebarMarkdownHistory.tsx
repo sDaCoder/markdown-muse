@@ -11,6 +11,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "../ui/dropd
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useUser } from "@clerk/clerk-react";
 import React from "react";
+import { addNewUserText, deleteUserText, getAllUserTexts, updateUserText } from "../../userTextAPI";
 
 interface MarkdownType {
     _id: string
@@ -31,7 +32,8 @@ const SidebarMarkdownHistory: React.FC = () => {
         if (!isLoaded || !isSignedIn) return // Wait until the user is signed in
         (async () => {
             try {
-                const res = await axios.get(`http://localhost:3000/api/${user?.id}`)
+                // const res = await axios.get(`http://localhost:3000/api/${user?.id}`)
+                const res = await getAllUserTexts(user?.id)
                 setMarkdownHistory(res.data.texts || [])
             } catch (e) {
                 console.log(e);
@@ -44,9 +46,10 @@ const SidebarMarkdownHistory: React.FC = () => {
         e.preventDefault()
         if (editId) {
             try {
-                const res = await axios.patch(`http://localhost:3000/api/${user?.id}/${editId}`, {
-                    textTitle: title
-                })
+                // const res = await axios.patch(`http://localhost:3000/api/${user?.id}/${editId}`, {
+                //     textTitle: title
+                // })
+                const res = await updateUserText(user?.id, editId, title, '')
                 setMarkdownHistory(prev =>
                     prev.map(md =>
                         md._id === editId ? { ...md, textTitle: res.data.textTitle } : md
@@ -61,10 +64,11 @@ const SidebarMarkdownHistory: React.FC = () => {
         }
         else {
             try {
-                const res = await axios.post(`http://localhost:3000/api/${user?.id}`, {
-                    textTitle: title,
-                    text: ''
-                })
+                // const res = await axios.post(`http://localhost:3000/api/${user?.id}`, {
+                //     textTitle: title,
+                //     text: ''
+                // })
+                const res = await addNewUserText(user?.id, title, '')
                 setOpen(false)
                 setTitle("Untitled Text")
                 setMarkdownHistory(prev => [...prev, {
@@ -81,7 +85,8 @@ const SidebarMarkdownHistory: React.FC = () => {
 
     const handleDeleteText = async (textId: string) => {
         try {
-            await axios.delete(`http://localhost:3000/api/${user?.id}/${textId}`)
+            // await axios.delete(`http://localhost:3000/api/${user?.id}/${textId}`)
+            await deleteUserText(user?.id, textId)
             setMarkdownHistory(prev => prev.filter(md => md._id !== textId))
             // If the current route is the one being deleted, redirect to home or first available markdown
             if (window.location.pathname === `/editor/${textId}`) {

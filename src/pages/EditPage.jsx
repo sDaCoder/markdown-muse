@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import axios from 'axios'
 import { useParams } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
+import { addNewUserText, getAllUserTexts, getUserText, updateUserText } from '../userTextAPI'
 
 const EditPage = () => {
     // const storedText = localStorage.getItem('markdownText')
@@ -32,7 +33,8 @@ const EditPage = () => {
         (async () => {
             try {
                 if (urlTextId) {
-                    const res = await axios.get(`http://localhost:3000/api/${user.id}/${urlTextId}`)
+                    // const res = await axios.get(`http://localhost:3000/api/${user.id}/${urlTextId}`)
+                    const res = await getUserText(user.id, urlTextId)
                     if (res.data.textObj) {
                         setMarkdownText(res.data.textObj.text)
                         setInitialText(res.data.textObj.text)
@@ -40,7 +42,8 @@ const EditPage = () => {
                         setLastSaved(res.data.textObj.lastSaved)
                     }
                 } else {
-                    const res = await axios.get(`http://localhost:3000/api/${user.id}`)
+                    // const res = await axios.get(`http://localhost:3000/api/${user.id}`)
+                    const res = await getAllUserTexts(user.id)
                     if (res.data.texts && res.data.texts.length > 0) {
                         setMarkdownText(res.data.texts[0].text)
                         setInitialText(res.data.texts[0].text)
@@ -66,16 +69,18 @@ const EditPage = () => {
             try {
                 if (textId) {
                     // Update existing text
-                    const res = await axios.patch(`http://localhost:3000/api/${user.id}/${textId}`, {
-                        text: markdownText
-                    })
+                    // const res = await axios.patch(`http://localhost:3000/api/${user.id}/${textId}`, {
+                    //     text: markdownText
+                    // })
+                    const res = await updateUserText(user.id, textId, '', markdownText)
                     setLastSaved(res.data.lastSaved)
                 }
                 else {
                     // Create new text
-                    const res = await axios.post(`http://localhost:3000/api/${user.id}`, {
-                        text: markdownText
-                    })
+                    // const res = await axios.post(`http://localhost:3000/api/${user.id}`, {
+                    //     text: markdownText
+                    // })
+                    const res = await addNewUserText(user.id, '', markdownText)
                     setTextId(res.data._id)
                     setLastSaved(res.data.lastSaved)
                     // Save the new textId
