@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
 import { NavigateFunction, NavLink, useNavigate } from "react-router-dom";
 import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
@@ -12,6 +11,8 @@ import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useUser } from "@clerk/clerk-react";
 import React from "react";
 import { addNewUserText, deleteUserText, getAllUserTexts, updateUserText } from "../../userTextAPI";
+import { toast } from "sonner";
+import { AxiosResponse } from "axios";
 
 interface MarkdownType {
     _id: string
@@ -19,7 +20,7 @@ interface MarkdownType {
     textTitle: string
 }
 
-const SidebarMarkdownHistory: React.FC = () => {
+const SidebarMarkdownHistory: React.FunctionComponent = () => {
     const [markdownHistory, setMarkdownHistory] = useState<MarkdownType[]>([]);
     const [open, setOpen] = useState<boolean>(false)
     const [title, setTitle] = useState<string>("Untitled Text")
@@ -33,7 +34,7 @@ const SidebarMarkdownHistory: React.FC = () => {
         (async () => {
             try {
                 // const res = await axios.get(`http://localhost:3000/api/${user?.id}`)
-                const res = await getAllUserTexts(user?.id)
+                const res: AxiosResponse = await getAllUserTexts(user?.id)
                 setMarkdownHistory(res.data.texts || [])
             } catch (e) {
                 console.log(e);
@@ -49,7 +50,7 @@ const SidebarMarkdownHistory: React.FC = () => {
                 // const res = await axios.patch(`http://localhost:3000/api/${user?.id}/${editId}`, {
                 //     textTitle: title
                 // })
-                const res = await updateUserText(user?.id, editId, title, '')
+                const res: AxiosResponse = await updateUserText(user?.id, editId, title, '')
                 setMarkdownHistory(prev =>
                     prev.map(md =>
                         md._id === editId ? { ...md, textTitle: res.data.textTitle } : md
@@ -58,8 +59,10 @@ const SidebarMarkdownHistory: React.FC = () => {
                 setOpen(false)
                 setEditId(null)
                 setTitle("Untitled Text")
+                toast.success(`Markdown title updated! ${res.data.textTitle}`)
             } catch (e) {
                 console.log(e);
+                toast.error('Failed to update markdown title')
             }
         }
         else {
@@ -68,7 +71,7 @@ const SidebarMarkdownHistory: React.FC = () => {
                 //     textTitle: title,
                 //     text: ''
                 // })
-                const res = await addNewUserText(user?.id, title, '')
+                const res: AxiosResponse = await addNewUserText(user?.id, title, '')
                 setOpen(false)
                 setTitle("Untitled Text")
                 setMarkdownHistory(prev => [...prev, {
@@ -77,8 +80,10 @@ const SidebarMarkdownHistory: React.FC = () => {
                     textTitle: res.data.textTitle
                 }])
                 navigate(`/editor/${res.data._id}`)
+                toast.success(`New markdown created! ${res.data.textTitle}`)
             } catch (e) {
                 console.log(e);
+                toast.error('Failed to create new markdown')
             }
         }
     }
@@ -105,6 +110,7 @@ const SidebarMarkdownHistory: React.FC = () => {
             }
         } catch (error) {
             console.log(error);
+            toast.error('Failed to delete markdown')
         }
     }
 

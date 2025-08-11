@@ -25,20 +25,20 @@ const TabsArea: React.FC<TabsAreaProps> = ({
 }) => {
     const [copyText, setCopyText] = useState<string>('')
     const handleCopy = () => {
-    if (markdownText) {
-      setCopyText(markdownText)
-      copy(copyText)
-      setCopyIcon(false)
-      toast.success('Markdown copied to clipboard!')
-    } else {
-      toast.error('No markdown text to copy')
+        if (markdownText) {
+            setCopyText(markdownText)
+            copy(copyText)
+            setCopyIcon(false)
+            toast.success('Markdown copied to clipboard!')
+        } else {
+            toast.error('No markdown text to copy')
+        }
     }
-  }
     return (
         <>
             <div className='flex items-center justify-center h-[80vh]'>
 
-                <Tabs defaultValue="textarea" className="w-[700px]">
+                <Tabs defaultValue="markdown" className="w-[700px]">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="textarea">Textarea</TabsTrigger>
                         <TabsTrigger value="markdown">Markdown</TabsTrigger>

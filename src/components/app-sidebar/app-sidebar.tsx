@@ -5,6 +5,7 @@ import SidebarTopTitle from "../SidebarTopTitle/SidebarTopTitle"
 import SidebarMarkdownHistory from "../SidebarMarkdownHistory/SidebarMarkdownHistory"
 import SidebarOtherSettings from "../SidebarOtherSettings/SidebarOtherSettings"
 import { Button } from "../ui/button"
+import React from "react"
 
 export const AppSidebar: React.FC = () => {
   const { open } = useSidebar()
@@ -221,7 +222,7 @@ export const AppSidebar: React.FC = () => {
               {/* <SidebarMenu>
                 <SidebarMenuItem> */}
               {/* <Button className='rounded'>Log In</Button> */}
-              {open && <SidebarMenuButton asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton>}
+              {open && <SidebarMenuButton className="bg-teal-600 hover:bg-teal-700 hover:text-white" asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton>}
               {/* </SidebarMenuItem>
               </SidebarMenu> */}
             </SidebarGroupContent>
