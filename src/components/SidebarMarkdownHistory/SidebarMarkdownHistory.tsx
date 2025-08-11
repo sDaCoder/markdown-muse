@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { NavigateFunction, NavLink, useNavigate } from "react-router-dom";
 import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/Dialog";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Brush, MoreHorizontal, Plus } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
