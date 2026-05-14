@@ -102,13 +102,14 @@ export const AppSidebar: React.FC = () => {
   // }
 
   return (
-    <div className="absolute">
       <Sidebar
-        // variant="floating"
-        collapsible="icon"
+        className="border-r border-sidebar-border/70"
+        collapsible="offcanvas"
       >
 
-        <SidebarHeader> <SidebarTopTitle /> </SidebarHeader>
+        <SidebarHeader className="border-b border-sidebar-border/60 px-3 py-3">
+          <SidebarTopTitle />
+        </SidebarHeader>
 
         <SidebarContent>
           <SidebarOtherSettings />
@@ -222,13 +223,12 @@ export const AppSidebar: React.FC = () => {
               {/* <SidebarMenu>
                 <SidebarMenuItem> */}
               {/* <Button className='rounded'>Log In</Button> */}
-              {open && <SidebarMenuButton className="bg-teal-600 hover:bg-teal-700 hover:text-white" asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton>}
+              {open && <SidebarMenuButton className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-[0_0_15px_rgba(125,211,252,0.2)]" asChild><SignInButton mode="modal"><Button>Sign In</Button></SignInButton></SidebarMenuButton>}
               {/* </SidebarMenuItem>
               </SidebarMenu> */}
             </SidebarGroupContent>
           </SignedOut>
         </SidebarFooter>
       </Sidebar>
-    </div>
   )
 }

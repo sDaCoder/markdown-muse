@@ -1,12 +1,11 @@
 import Navbar from './components/Navbar/Navbar'
 import { SidebarProvider } from './components/ui/sidebar'
 import { AppSidebar } from './components/app-sidebar/app-sidebar'
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import Home from './pages/Home'
-import About from './pages/About'
-import Contact from './pages/Contact'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import EditPage from './pages/EditPage'
-import { RedirectToSignIn, SignedIn, SignedOut, SignIn, SignUp, UserButton } from '@clerk/clerk-react'
+import EditorHome from './pages/EditorHome'
+import SidebarTopTitle from './components/SidebarTopTitle/SidebarTopTitle'
+import { RedirectToSignIn, SignedIn, SignedOut } from '@clerk/clerk-react'
 
 function App() {
 
@@ -14,24 +13,24 @@ function App() {
     <>
       <BrowserRouter>
         <SidebarProvider>
-          <div className="absolute inset-0 -z-10 h-full w-full bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]"></div>
           <AppSidebar />
-          <main className='flex-1'>
+          <main className='min-w-0 flex-1'>
             <Navbar />
             <Routes>
-              <Route path='/' element={<Home/>}/>
-              <Route path='/about' element={<About/>}/>
-              <Route path='/contact' element={<Contact/>}/>
-              <Route path='/editor' element={
+              <Route path='/' element={
                 <>
                   <SignedIn>
-                    <EditPage/>
+                    <EditorHome/>
                   </SignedIn>
                   <SignedOut>
-                    <RedirectToSignIn/>
+                    <section className='relative flex min-h-screen items-center justify-center overflow-hidden px-6'>
+                      <div className='pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.18),transparent_60%)] blur-3xl' />
+                      <SidebarTopTitle variant='hero' />
+                    </section>
                   </SignedOut>
                 </>
               } />
+              <Route path='/editor' element={<Navigate to='/' replace />} />
               <Route path='/editor/:textId' element={
                 <>
                   <SignedIn>

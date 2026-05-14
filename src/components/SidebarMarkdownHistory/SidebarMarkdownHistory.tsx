@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { NavigateFunction, NavLink, useNavigate } from "react-router-dom";
-import { SidebarGroup, SidebarGroupAction, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
-import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Brush, MoreHorizontal, Plus } from "lucide-react";
+import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
+import { Brush, MoreHorizontal } from "lucide-react";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -129,39 +129,34 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                 <SidebarGroupLabel>Your Markdown History</SidebarGroupLabel>
                 {user &&
                     <>
-                        <SidebarGroupAction title="Add new Markdown">
-                            <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) { setEditId(null); setTitle("Untitled Text") } }}>
-                                <DialogTrigger asChild>
-                                    <Plus className="w-4 h-4" />
-                                </DialogTrigger>
-                                <DialogContent>
-                                    <form onSubmit={handleSaveTitle}>
-                                        <DialogHeader>
-                                            <DialogTitle className="py-4">
-                                                {editId ? "Edit Markdown Title" : "Enter your Markdown title"}
-                                            </DialogTitle>
-                                        </DialogHeader>
-                                        <div className="flex items-center space-x-2">
-                                            <div className="grid flex-1 gap-2">
-                                                <Label htmlFor="title" className="sr-only">
-                                                    {editId ? "Edit Page Title" : "Add Page Title"}
-                                                </Label>
-                                                <Input
-                                                    id="title"
-                                                    ref={inputRef}
-                                                    value={title}
-                                                    onChange={e => setTitle(e.target.value)}
-                                                    autoFocus
-                                                />
-                                            </div>
+                        <Dialog open={open} onOpenChange={(val) => { setOpen(val); if (!val) { setEditId(null); setTitle("Untitled Text") } }}>
+                            <DialogContent>
+                                <form onSubmit={handleSaveTitle}>
+                                    <DialogHeader>
+                                        <DialogTitle className="py-4">
+                                            {editId ? "Edit Markdown Title" : "Enter your Markdown title"}
+                                        </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex items-center space-x-2">
+                                        <div className="grid flex-1 gap-2">
+                                            <Label htmlFor="title" className="sr-only">
+                                                {editId ? "Edit Page Title" : "Add Page Title"}
+                                            </Label>
+                                            <Input
+                                                id="title"
+                                                ref={inputRef}
+                                                value={title}
+                                                onChange={e => setTitle(e.target.value)}
+                                                autoFocus
+                                            />
                                         </div>
-                                        <DialogFooter className="py-4">
-                                            <Button type="submit">{editId ? "Save Changes" : "Save Title"}</Button>
-                                        </DialogFooter>
-                                    </form>
-                                </DialogContent>
-                            </Dialog>
-                        </SidebarGroupAction>
+                                    </div>
+                                    <DialogFooter className="py-4">
+                                        <Button type="submit">{editId ? "Save Changes" : "Save Title"}</Button>
+                                    </DialogFooter>
+                                </form>
+                            </DialogContent>
+                        </Dialog>
                         <SidebarGroupContent>
                             <SidebarMenu>
                                 {markdownHistory.map(md => (

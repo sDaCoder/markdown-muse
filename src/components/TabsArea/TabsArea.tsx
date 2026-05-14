@@ -36,61 +36,74 @@ const TabsArea: React.FC<TabsAreaProps> = ({
     }
     return (
         <>
-            <div className='flex items-center justify-center h-[80vh]'>
-
-                <Tabs defaultValue="markdown" className="w-[700px]">
-                    <TabsList className="grid w-full grid-cols-2">
-                        <TabsTrigger value="textarea">Textarea</TabsTrigger>
-                        <TabsTrigger value="markdown">Markdown</TabsTrigger>
+            <div className='flex items-center justify-center min-h-[calc(100vh-80px)] py-12'>
+                <Tabs defaultValue="markdown" className="w-[800px]">
+                    <TabsList className="grid w-full grid-cols-2 glass p-1 mb-4 rounded-xl">
+                        <TabsTrigger 
+                            value="textarea" 
+                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all rounded-lg"
+                        >
+                            Editor
+                        </TabsTrigger>
+                        <TabsTrigger 
+                            value="markdown"
+                            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all rounded-lg"
+                        >
+                            Preview
+                        </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="textarea">
-                        <Card>
-                            <Textarea
-                                className='w-[90%] mx-auto h-[200px] overflow-y-auto resize-none'
-                                placeholder='Type your markdown here...'
-                                onChange={(e) => {
-                                    setMarkdownText(e.target.value)
-                                }}
-                                value={markdownText}
-                            />
-                            <CardFooter>
-                                <Save className='mx-2' />
-                                <p className='text-xs text-muted-foreground'>
-                                    Last saved at {new Date(lastSaved).toLocaleString()}
+                    <TabsContent value="textarea" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Card className="glass overflow-hidden border-0">
+                            <div className="p-6">
+                                <Textarea
+                                    className='w-full h-[400px] overflow-y-auto resize-none bg-background/30 border-primary/20 focus-visible:ring-primary/50 text-foreground placeholder:text-muted-foreground/50 rounded-xl p-4'
+                                    placeholder='Type your markdown here...'
+                                    onChange={(e) => {
+                                        setMarkdownText(e.target.value)
+                                    }}
+                                    value={markdownText}
+                                />
+                            </div>
+                            <CardFooter className="border-t border-primary/10 bg-primary/5 py-4">
+                                <Save className='mx-2 text-primary' size={18} />
+                                <p className='text-xs text-muted-foreground font-medium'>
+                                    Last saved at {lastSaved ? new Date(lastSaved).toLocaleString() : 'Not saved yet'}
                                 </p>
                             </CardFooter>
                         </Card>
                     </TabsContent>
-                    <TabsContent value="markdown">
-                        <Card>
-                            <div className='w-[90%] flex items-center justify-between mx-auto'>
-                                <h1 className='text-2xl font-bold text-zinc-600'>Markdown Preview</h1>
+                    
+                    <TabsContent value="markdown" className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <Card className="glass overflow-hidden border-0">
+                            <div className='flex items-center justify-between p-6 pb-2'>
+                                <h1 className='text-xl font-bold text-primary tracking-tight'>Glacier Preview</h1>
                                 <Button
                                     onClick={handleCopy}
-                                    className='rounded-full cursor-pointer bg-zinc-500 hover:bg-zinc-600 h-10 w-10'>
-                                    {!copyIcon ? <Check className='text-white' size={16} /> : <Copy className='text-white' size={16} />}
+                                    variant="ghost"
+                                    className='rounded-full hover:bg-primary/20 hover:border hover:border-primary/30 text-primary h-10 w-10 p-0 transition-all'
+                                >
+                                    {!copyIcon ? <Check className='text-primary' size={20} /> : <Copy className='text-primary' size={20} />}
                                 </Button>
                             </div>
-                            <CardContent className='w-[90%] min-h-[150px] mx-auto py-6 bg-zinc-100 rounded-md shadow-lg border'>
-                                {markdownText ?
-                                    <>
-                                        <div className='w-full h-[200px] overflow-y-auto'>
-                                            <Markdown>
-                                                {markdownText.trim()}
-                                            </Markdown>
+                            <CardContent className='px-6 pb-6'>
+                                <div className='w-full min-h-[350px] max-h-[450px] overflow-y-auto py-6 px-8 bg-background/40 rounded-xl border border-primary/10 backdrop-blur-sm prose prose-invert max-w-none'>
+                                    {markdownText ?
+                                        <Markdown className="markdown-content">
+                                            {markdownText.trim()}
+                                        </Markdown>
+                                        :
+                                        <div className='w-full h-[300px] flex flex-col gap-4 items-center justify-center'>
+                                            <ScrollText className='text-primary/20 animate-pulse' size={88} />
+                                            <h2 className='text-primary/40 font-bold text-lg'>Ethereal silence...</h2>
+                                            <p className='text-muted-foreground/40 text-sm'>Start typing to see the light.</p>
                                         </div>
-                                    </>
-                                    :
-                                    <div className='w-full h-[100%] flex flex-col gap-4 items-center justify-center'>
-                                        <ScrollText className='text-zinc-400' size={88} />
-                                        <h2 className='text-zinc-400 font-extrabold text-lg'>No markdown found</h2>
-                                    </div>
-                                }
+                                    }
+                                </div>
                             </CardContent>
-                            <CardFooter>
-                                <Save className='mx-2' />
-                                <p className='text-xs text-muted-foreground'>
+                            <CardFooter className="border-t border-primary/10 bg-primary/5 py-4">
+                                <Save className='mx-2 text-primary' size={18} />
+                                <p className='text-xs text-muted-foreground font-medium'>
                                     Last saved at {lastSaved ? new Date(lastSaved).toLocaleString() : 'N/A'}
                                 </p>
                             </CardFooter>
