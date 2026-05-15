@@ -94,15 +94,15 @@ const EditorHome = () => {
   }
 
   return (
-    <section className="min-h-[calc(100vh-4rem)] overflow-hidden px-6 py-8 md:px-8 lg:px-12">
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-8">
-        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-72 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.18),transparent_60%)] blur-3xl" />
+    <section className="min-h-[calc(100svh-4rem)] overflow-hidden px-4 py-6 md:px-6 lg:px-10">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-6 lg:gap-8">
+        <div className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 bg-[radial-gradient(circle_at_top,rgba(125,211,252,0.18),transparent_55%)] blur-3xl" />
 
-        <header className="glass-elevated relative overflow-hidden rounded-[28px] px-6 py-8 transition-opacity duration-300 md:px-8">
-          <div className="absolute inset-y-0 right-0 w-1/2 bg-[linear-gradient(135deg,rgba(125,211,252,0.12),transparent_60%)]" />
+        <header className="relative overflow-hidden rounded-[30px] border border-primary/12 bg-[linear-gradient(180deg,rgba(15,21,36,0.9),rgba(15,21,36,0.7))] px-6 py-7 shadow-[0_0_40px_rgba(125,211,252,0.06)] md:px-8 md:py-8">
+          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(125,211,252,0.14),transparent_45%),linear-gradient(135deg,rgba(255,255,255,0.03),transparent_35%)]" />
           <div className="relative flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-2xl space-y-4">
-              <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/8 px-3 py-1 text-xs font-medium tracking-[0.24em] text-primary uppercase">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/18 bg-primary/8 px-3 py-1 text-xs font-medium uppercase tracking-[0.24em] text-primary">
                 <Sparkles className="size-3.5" />
                 Editor Home
               </div>
@@ -141,30 +141,38 @@ const EditorHome = () => {
           </div>
         </header>
 
-        <div className="grid gap-4 lg:grid-cols-[1.1fr_1.7fr]">
-          <section className="glass rounded-[24px] p-6">
-            <div className="mb-6 flex items-center gap-2 text-sm font-medium text-primary">
+        <div className="grid gap-4 lg:grid-cols-[0.9fr_1.1fr]">
+          <section className="rounded-[26px] border border-border/70 bg-card/35 p-6 backdrop-blur-sm">
+            <div className="mb-5 flex items-center gap-2 text-sm font-medium text-primary">
               <Clock3 className="size-4" />
               Workspace status
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1">
-              <div className="rounded-2xl border border-white/6 bg-white/3 p-4">
-                <p className="text-sm text-muted-foreground">Recent notes</p>
-                <p className="mt-3 text-3xl font-semibold">{metrics.recentCount}</p>
+            <div className="divide-y divide-white/6">
+              <div className="flex items-center justify-between gap-4 py-4 first:pt-0">
+                <div>
+                  <p className="text-sm text-muted-foreground">Recent notes</p>
+                  <p className="mt-1 text-base font-medium text-foreground">What is already in your stack</p>
+                </div>
+                <p className="text-3xl font-semibold tabular-nums text-primary">{metrics.recentCount}</p>
               </div>
-              <div className="rounded-2xl border border-white/6 bg-white/3 p-4">
-                <p className="text-sm text-muted-foreground">Notes with content</p>
-                <p className="mt-3 text-3xl font-semibold">{metrics.activeCount}</p>
+              <div className="flex items-center justify-between gap-4 py-4">
+                <div>
+                  <p className="text-sm text-muted-foreground">Notes with content</p>
+                  <p className="mt-1 text-base font-medium text-foreground">Drafts worth returning to</p>
+                </div>
+                <p className="text-3xl font-semibold tabular-nums text-primary">{metrics.activeCount}</p>
               </div>
-              <div className="rounded-2xl border border-white/6 bg-white/3 p-4 sm:col-span-2 lg:col-span-1">
-                <p className="text-sm text-muted-foreground">Last activity</p>
-                <p className="mt-3 text-base font-medium leading-6">{metrics.lastActivity}</p>
+              <div className="flex items-center justify-between gap-4 py-4 pb-0">
+                <div>
+                  <p className="text-sm text-muted-foreground">Last activity</p>
+                  <p className="mt-1 text-base font-medium leading-6 text-foreground">{metrics.lastActivity}</p>
+                </div>
               </div>
             </div>
           </section>
 
-          <section className="glass rounded-[24px] p-4 md:p-6">
-            <div className="mb-5 flex items-center justify-between gap-3">
+          <section className="rounded-[26px] border border-border/70 bg-card/25 p-4 md:p-5">
+            <div className="mb-4 flex items-center justify-between gap-3 px-1">
               <div>
                 <h2 className="text-xl font-semibold">Recent notes</h2>
                 <p className="text-sm text-muted-foreground">
@@ -178,12 +186,12 @@ const EditorHome = () => {
                 {Array.from({ length: 4 }).map((_, index) => (
                   <div
                     key={index}
-                    className="h-28 animate-pulse rounded-2xl border border-primary/10 bg-primary/5"
+                    className="h-24 animate-pulse rounded-2xl border border-primary/10 bg-primary/5"
                   />
                 ))}
               </div>
             ) : notes.length === 0 ? (
-              <div className="flex min-h-72 flex-col items-center justify-center rounded-[24px] border border-dashed border-primary/20 bg-[linear-gradient(180deg,rgba(125,211,252,0.06),rgba(125,211,252,0.01))] px-6 text-center">
+              <div className="flex min-h-72 flex-col items-center justify-center rounded-[24px] border border-dashed border-primary/18 bg-[linear-gradient(180deg,rgba(125,211,252,0.05),rgba(125,211,252,0.01))] px-6 text-center">
                 <div className="mb-4 rounded-full border border-primary/20 bg-primary/10 p-4 text-primary">
                   <FileText className="size-6" />
                 </div>
@@ -197,43 +205,41 @@ const EditorHome = () => {
                 </Button>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div className="divide-y divide-white/6 overflow-hidden rounded-[24px] border border-border/70 bg-background/20">
                 {notes.map((note, index) => (
                   <button
                     key={note._id}
                     type="button"
                     onClick={() => navigate(`/editor/${note._id}`)}
-                    className="group w-full rounded-[22px] border border-white/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.015))] p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:bg-primary/[0.07]"
+                    className="group flex w-full items-start justify-between gap-6 px-5 py-4 text-left transition-colors duration-200 hover:bg-primary/[0.06] focus-visible:bg-primary/[0.06] focus-visible:outline-none"
                   >
-                    <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                      <div className="space-y-3">
-                        <div className="flex items-center gap-3">
-                          <span className="inline-flex size-8 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
-                            {String(index + 1).padStart(2, '0')}
-                          </span>
-                          <div>
-                            <h3 className="text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
-                              {note.textTitle || 'Untitled Text'}
-                            </h3>
-                            <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                              Markdown draft
-                            </p>
-                          </div>
-                        </div>
-                        <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
-                          {buildPreview(note.text)}
-                        </p>
-                      </div>
-
-                      <div className="flex flex-col items-start gap-3 md:items-end">
-                        <div className="text-sm text-muted-foreground">
-                          {formatUpdatedAt(note.lastSaved)}
-                        </div>
-                        <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
-                          Open note
-                          <PencilLine className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    <div className="min-w-0 space-y-2">
+                      <div className="flex items-center gap-3">
+                        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full border border-primary/18 bg-primary/10 text-xs font-semibold text-primary tabular-nums">
+                          {String(index + 1).padStart(2, '0')}
                         </span>
+                        <div className="min-w-0">
+                          <h3 className="truncate text-base font-semibold text-foreground transition-colors group-hover:text-primary">
+                            {note.textTitle || 'Untitled Text'}
+                          </h3>
+                          <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                            Markdown draft
+                          </p>
+                        </div>
                       </div>
+                      <p className="max-w-2xl text-sm leading-6 text-muted-foreground">
+                        {buildPreview(note.text)}
+                      </p>
+                    </div>
+
+                    <div className="flex shrink-0 flex-col items-end gap-2 text-right">
+                      <div className="text-sm text-muted-foreground">
+                        {formatUpdatedAt(note.lastSaved)}
+                      </div>
+                      <span className="inline-flex items-center gap-2 text-sm font-medium text-primary">
+                        Open note
+                        <PencilLine className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
+                      </span>
                     </div>
                   </button>
                 ))}

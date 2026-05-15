@@ -16,7 +16,7 @@ const Navbar: React.FC = () => {
                     <Button
                         variant='ghost'
                         size='icon'
-                        className='h-10 w-10 shrink-0 rounded-full border border-primary/15 bg-card/60 text-primary hover:bg-primary/10'
+                        className='h-10 w-10 shrink-0 rounded-full border border-primary/15 bg-card/60 text-primary transition-transform duration-200 hover:-translate-y-0.5 hover:bg-primary/10'
                         onClick={toggleSidebar}
                     >
                         <PanelLeft className='size-5' />
@@ -25,7 +25,7 @@ const Navbar: React.FC = () => {
 
                     <button
                         type='button'
-                        className='min-w-0 text-left'
+                        className='min-w-0 rounded-2xl px-2 py-1 text-left transition-colors duration-200 hover:bg-primary/5'
                         onClick={() => navigate('/')}
                     >
                         <SidebarTopTitle variant='navbar' />
@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
 
                     <SignedOut>
                         <SignInButton mode="modal">
-                            <Button className='shadow-[0_0_20px_rgba(125,211,252,0.2)] transition-all'>
+                            <Button variant='outline' className='shadow-[0_0_20px_rgba(125,211,252,0.14)] transition-transform duration-200 hover:-translate-y-0.5'>
                                 Log In
                             </Button>
                         </SignInButton>

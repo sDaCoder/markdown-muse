@@ -30,26 +30,21 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
     const { user, isLoaded, isSignedIn } = useUser()
 
     useEffect(() => {
-        if (!isLoaded || !isSignedIn) return // Wait until the user is signed in
+        if (!isLoaded || !isSignedIn) return
         (async () => {
             try {
-                // const res = await axios.get(`http://localhost:3000/api/${user?.id}`)
                 const res: AxiosResponse = await getAllUserTexts(user?.id)
                 setMarkdownHistory(res.data.texts || [])
             } catch (e) {
-                console.log(e);
                 setMarkdownHistory([])
             }
         })()
-    }, [open, isLoaded, isSignedIn, user?.id]) // Refetch only when the dialog closes
+    }, [open, isLoaded, isSignedIn, user?.id])
 
     const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         if (editId) {
             try {
-                // const res = await axios.patch(`http://localhost:3000/api/${user?.id}/${editId}`, {
-                //     textTitle: title
-                // })
                 const res: AxiosResponse = await updateUserText(user?.id, editId, title, '')
                 setMarkdownHistory(prev =>
                     prev.map(md =>
@@ -61,16 +56,11 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                 setTitle("Untitled Text")
                 toast.success(`Markdown title updated! ${res.data.textTitle}`)
             } catch (e) {
-                console.log(e);
                 toast.error('Failed to update markdown title')
             }
         }
         else {
             try {
-                // const res = await axios.post(`http://localhost:3000/api/${user?.id}`, {
-                //     textTitle: title,
-                //     text: ''
-                // })
                 const res: AxiosResponse = await addNewUserText(user?.id, title, '')
                 setOpen(false)
                 setTitle("Untitled Text")
@@ -82,7 +72,6 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                 navigate(`/editor/${res.data._id}`)
                 toast.success(`New markdown created! ${res.data.textTitle}`)
             } catch (e) {
-                console.log(e);
                 toast.error('Failed to create new markdown')
             }
         }
@@ -90,10 +79,8 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
 
     const handleDeleteText = async (textId: string) => {
         try {
-            // await axios.delete(`http://localhost:3000/api/${user?.id}/${textId}`)
             await deleteUserText(user?.id, textId)
             setMarkdownHistory(prev => prev.filter(md => md._id !== textId))
-            // If the current route is the one being deleted, redirect to home or first available markdown
             if (window.location.pathname === `/editor/${textId}`) {
                 if (markdownHistory.length > 1) {
                     const next = markdownHistory.find(md => md._id !== textId)
@@ -109,12 +96,10 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                 }
             }
         } catch (error) {
-            console.log(error);
             toast.error('Failed to delete markdown')
         }
     }
 
-    // Open dialog for editing
     const handleEditTitle = (id: string, currentTitle: string) => {
         setEditId(id)
         setTitle(currentTitle)
