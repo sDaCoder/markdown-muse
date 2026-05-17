@@ -8,7 +8,6 @@ export const UserModelSQL = sequelize.define("User", {
     },
     name: {
         type: sequelize.Sequelize.STRING,
-        unique: true,
         allowNull: false
     },
     email: {
@@ -19,5 +18,8 @@ export const UserModelSQL = sequelize.define("User", {
     passwordHash: {
         type: sequelize.Sequelize.STRING,
         allowNull: false
+    },
+    refreshToken: {
+        type: sequelize.Sequelize.STRING
     }
 })

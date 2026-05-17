@@ -75,3 +75,18 @@ export const deleteNote = async (req, res) => {
         res.status(500).json({ error: "Internal Server Error" });
     }
 }
+
+export const getLatest3Notes = async (req, res) => {
+    const { userId } = req.params;
+    try {
+        const notes_latest3 = await TextModelSQL.findAll({
+            where: { userId },
+            order: [['updatedAt', 'DESC']],
+            limit: 3
+        });
+        res.json(notes_latest3);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+}

@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { NavigateFunction, NavLink, useNavigate } from "react-router-dom";
+import { NavigateFunction, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuAction, SidebarMenuButton, SidebarMenuItem } from "../ui/sidebar";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Brush, MoreHorizontal } from "lucide-react";
@@ -10,7 +10,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "../ui/dropd
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { useUser } from "@clerk/clerk-react";
 import React from "react";
-import { addNewUserText, deleteUserText, getAllUserTexts, updateUserText } from "../../userTextAPI";
+import { addNewUserText, deleteUserText, getAllUserTexts, notifyUserTextsChanged, updateUserText, USER_TEXTS_CHANGED_EVENT } from "../../userTextAPI";
 import { toast } from "sonner";
 import { AxiosResponse } from "axios";
 
@@ -26,20 +26,33 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
     const [title, setTitle] = useState<string>("Untitled Text")
     const [editId, setEditId] = useState<string | null>(null)
     const navigate: NavigateFunction = useNavigate()
+    const location = useLocation()
     const inputRef = useRef<HTMLInputElement>(null);
     const { user, isLoaded, isSignedIn } = useUser()
 
-    useEffect(() => {
+    const loadMarkdownHistory = async () => {
         if (!isLoaded || !isSignedIn) return
-        (async () => {
-            try {
-                const res: AxiosResponse = await getAllUserTexts(user?.id)
-                setMarkdownHistory(res.data.texts || [])
-            } catch (e) {
-                setMarkdownHistory([])
-            }
-        })()
+
+        try {
+            const res: AxiosResponse = await getAllUserTexts(user?.id)
+            setMarkdownHistory(res.data.texts || [])
+        } catch (e) {
+            setMarkdownHistory([])
+        }
+    }
+
+    useEffect(() => {
+        loadMarkdownHistory()
     }, [open, isLoaded, isSignedIn, user?.id])
+
+    useEffect(() => {
+        const handleMarkdownsChanged = () => {
+            loadMarkdownHistory()
+        }
+
+        window.addEventListener(USER_TEXTS_CHANGED_EVENT, handleMarkdownsChanged)
+        return () => window.removeEventListener(USER_TEXTS_CHANGED_EVENT, handleMarkdownsChanged)
+    }, [isLoaded, isSignedIn, user?.id])
 
     const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -54,6 +67,7 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                 setOpen(false)
                 setEditId(null)
                 setTitle("Untitled Text")
+                notifyUserTextsChanged()
                 toast.success(`Markdown title updated! ${res.data.textTitle}`)
             } catch (e) {
                 toast.error('Failed to update markdown title')
@@ -69,6 +83,7 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
                     text: "",
                     textTitle: res.data.textTitle
                 }])
+                notifyUserTextsChanged()
                 navigate(`/editor/${res.data._id}`)
                 toast.success(`New markdown created! ${res.data.textTitle}`)
             } catch (e) {
@@ -79,21 +94,13 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
 
     const handleDeleteText = async (textId: string) => {
         try {
+            const remainingNotes = markdownHistory.filter(md => md._id !== textId)
+            const isActiveNote = location.pathname === `/editor/${textId}`
             await deleteUserText(user?.id, textId)
-            setMarkdownHistory(prev => prev.filter(md => md._id !== textId))
-            if (window.location.pathname === `/editor/${textId}`) {
-                if (markdownHistory.length > 1) {
-                    const next = markdownHistory.find(md => md._id !== textId)
-                    if (next) {
-                        navigate(`/editor/${next._id}`)
-                    }
-                    else {
-                        navigate('/')
-                    }
-                }
-                else {
-                    navigate('/')
-                }
+            setMarkdownHistory(remainingNotes)
+            notifyUserTextsChanged()
+            if (isActiveNote) {
+                navigate(remainingNotes[0] ? `/editor/${remainingNotes[0]._id}` : '/')
             }
         } catch (error) {
             toast.error('Failed to delete markdown')

@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { Label } from "../ui/label"
 import { Input } from "../ui/input"
 import { Button } from "../ui/button"
-import { addNewUserText } from "../../userTextAPI"
+import { addNewUserText, notifyUserTextsChanged } from "../../userTextAPI"
 import React from "react"
 
 const SidebarOtherSettings: React.FC = () => {
@@ -23,9 +23,10 @@ const SidebarOtherSettings: React.FC = () => {
         e.preventDefault()
 
         try {
-            const res: AxiosResponse = await addNewUserText(user?.id, title, "")
+            const res: AxiosResponse = await addNewUserText(1, title, "")
             setOpen(false)
             setTitle("Untitled Text")
+            notifyUserTextsChanged()
             navigate(`/editor/${res.data._id}`)
             toast.success(`New markdown created! ${res.data.textTitle}`)
         } catch (error) {

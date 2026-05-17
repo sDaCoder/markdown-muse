@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { useUser } from '@clerk/clerk-react'
 import { Clock3, FileText, PencilLine, Plus, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
-import { addNewUserText, getAllUserTexts } from '../userTextAPI'
+import { addNewUserText, getLatest3UserTexts } from '../userTextAPI'
 import { Button } from '../components/ui/button'
 
 const formatUpdatedAt = (value) => {
@@ -52,7 +52,7 @@ const EditorHome = () => {
     const loadNotes = async () => {
       setIsFetching(true)
       try {
-        const res = await getAllUserTexts(user.id)
+        const res = await getLatest3UserTexts(user.id)
         setNotes(sortByLastSaved(res.data.texts || []))
       } catch (error) {
         setNotes([])
@@ -108,10 +108,10 @@ const EditorHome = () => {
               </div>
               <div className="space-y-3">
                 <h1 className="text-3xl font-semibold tracking-tight text-glow md:text-5xl">
-                  Recent notes, ready to reopen.
+                  Latest notes, ready to reopen.
                 </h1>
                 <p className="max-w-xl text-sm leading-6 text-muted-foreground md:text-base">
-                  Jump back into your latest drafts, scan recent activity, and open the note that still has momentum.
+                  Jump back into your three most recent drafts, scan recent activity, and open the note that still has momentum.
                 </p>
               </div>
             </div>
@@ -145,13 +145,13 @@ const EditorHome = () => {
           <section className="rounded-[26px] border border-border/70 bg-card/35 p-6 backdrop-blur-sm">
             <div className="mb-5 flex items-center gap-2 text-sm font-medium text-primary">
               <Clock3 className="size-4" />
-              Workspace status
+              Latest 3 status
             </div>
             <div className="divide-y divide-white/6">
               <div className="flex items-center justify-between gap-4 py-4 first:pt-0">
                 <div>
-                  <p className="text-sm text-muted-foreground">Recent notes</p>
-                  <p className="mt-1 text-base font-medium text-foreground">What is already in your stack</p>
+                  <p className="text-sm text-muted-foreground">Notes shown</p>
+                  <p className="mt-1 text-base font-medium text-foreground">Latest notes in view</p>
                 </div>
                 <p className="text-3xl font-semibold tabular-nums text-primary">{metrics.recentCount}</p>
               </div>
@@ -174,7 +174,7 @@ const EditorHome = () => {
           <section className="rounded-[26px] border border-border/70 bg-card/25 p-4 md:p-5">
             <div className="mb-4 flex items-center justify-between gap-3 px-1">
               <div>
-                <h2 className="text-xl font-semibold">Recent notes</h2>
+                <h2 className="text-xl font-semibold">Latest 3 notes</h2>
                 <p className="text-sm text-muted-foreground">
                   Your latest drafts, ordered by most recent save.
                 </p>
@@ -205,13 +205,13 @@ const EditorHome = () => {
                 </Button>
               </div>
             ) : (
-              <div className="divide-y divide-white/6 overflow-hidden rounded-[24px] border border-border/70 bg-background/20">
+              <div className="grid gap-3">
                 {notes.map((note, index) => (
                   <button
                     key={note._id}
                     type="button"
                     onClick={() => navigate(`/editor/${note._id}`)}
-                    className="group flex w-full items-start justify-between gap-6 px-5 py-4 text-left transition-colors duration-200 hover:bg-primary/[0.06] focus-visible:bg-primary/[0.06] focus-visible:outline-none"
+                    className="group flex w-full items-start justify-between gap-6 rounded-[22px] border border-border/70 bg-background/20 px-5 py-4 text-left transition-colors duration-200 hover:bg-primary/[0.06] focus-visible:bg-primary/[0.06] focus-visible:outline-none"
                   >
                     <div className="min-w-0 space-y-2">
                       <div className="flex items-center gap-3">
