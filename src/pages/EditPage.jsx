@@ -1,9 +1,9 @@
 import StreamdownEditorSurface from '../components/TabsArea/TabsArea'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { useParams } from 'react-router-dom'
-import { useUser } from '@clerk/clerk-react'
 import { addNewUserText, getAllUserTexts, getUserText, updateUserText } from '../userTextAPI'
+import { AuthContext } from '../context/AuthContext'
 
 const EditPage = () => {
     const { textId: urlTextId } = useParams()
@@ -13,9 +13,20 @@ const EditPage = () => {
     const [lastSaved, setLastSaved] = useState(null)
     const [hasLoaded, setHasLoaded] = useState(false)
     const [isSaving, setIsSaving] = useState(false)
-    const { user } = useUser()
+    const auth = useContext(AuthContext)
+    const user = auth?.user ?? null
+    const userLoading = auth?.userLoading ?? true
 
     useEffect(() => {
+        if (userLoading) {
+            return
+        }
+
+        if (!user?.id) {
+            setHasLoaded(true)
+            return
+        }
+
         ;(async () => {
             try {
                 if (urlTextId) {
@@ -41,7 +52,7 @@ const EditPage = () => {
                 setHasLoaded(true)
             }
         })()
-    }, [urlTextId, user?.id])
+    }, [urlTextId, user?.id, userLoading])
 
     const hasUnsavedChanges = hasLoaded && markdownText !== initialText
 

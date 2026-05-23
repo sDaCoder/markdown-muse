@@ -8,11 +8,11 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem } from "../ui/dropdown-menu";
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
-import { useUser } from "@clerk/clerk-react";
 import React from "react";
 import { addNewUserText, deleteUserText, getAllUserTexts, notifyUserTextsChanged, updateUserText, USER_TEXTS_CHANGED_EVENT } from "../../userTextAPI";
 import { toast } from "sonner";
 import { AxiosResponse } from "axios";
+import { AuthContext } from "../../context/AuthContext";
 
 interface MarkdownType {
     _id: string
@@ -28,10 +28,15 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
     const navigate: NavigateFunction = useNavigate()
     const location = useLocation()
     const inputRef = useRef<HTMLInputElement>(null);
-    const { user, isLoaded, isSignedIn } = useUser()
+    const auth = React.useContext(AuthContext)
+    const user = auth?.user ?? null
+    const userLoading = auth?.userLoading ?? true
 
     const loadMarkdownHistory = async () => {
-        if (!isLoaded || !isSignedIn) return
+        if (userLoading || !user?.id) {
+            setMarkdownHistory([])
+            return
+        }
 
         try {
             const res: AxiosResponse = await getAllUserTexts(user?.id)
@@ -43,7 +48,7 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
 
     useEffect(() => {
         loadMarkdownHistory()
-    }, [open, isLoaded, isSignedIn, user?.id])
+    }, [open, userLoading, user?.id])
 
     useEffect(() => {
         const handleMarkdownsChanged = () => {
@@ -52,7 +57,7 @@ const SidebarMarkdownHistory: React.FunctionComponent = () => {
 
         window.addEventListener(USER_TEXTS_CHANGED_EVENT, handleMarkdownsChanged)
         return () => window.removeEventListener(USER_TEXTS_CHANGED_EVENT, handleMarkdownsChanged)
-    }, [isLoaded, isSignedIn, user?.id])
+    }, [userLoading, user?.id])
 
     const handleSaveTitle = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()

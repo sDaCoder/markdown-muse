@@ -1,6 +1,5 @@
 import { useRef, useState } from "react"
 import { NavLink, useNavigate } from "react-router-dom"
-import { useUser } from "@clerk/clerk-react"
 import { AxiosResponse } from "axios"
 import { Home, Plus } from "lucide-react"
 import { toast } from "sonner"
@@ -11,19 +10,23 @@ import { Input } from "../ui/input"
 import { Button } from "../ui/button"
 import { addNewUserText, notifyUserTextsChanged } from "../../userTextAPI"
 import React from "react"
+import SignedInJWT from "../SignedInJWT/SignedInJWT"
+import { AuthContext } from "../../context/AuthContext"
 
 const SidebarOtherSettings: React.FC = () => {
     const [open, setOpen] = useState(false)
     const [title, setTitle] = useState("Untitled Text")
     const inputRef = useRef<HTMLInputElement>(null)
     const navigate = useNavigate()
-    const { user } = useUser()
+    const auth = React.useContext(AuthContext)
+    const user = auth?.user ?? null
 
     const handleCreateNote = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
+        if (!user?.id) return
 
         try {
-            const res: AxiosResponse = await addNewUserText(1, title, "")
+            const res: AxiosResponse = await addNewUserText(user.id, title, "")
             setOpen(false)
             setTitle("Untitled Text")
             notifyUserTextsChanged()
@@ -45,7 +48,7 @@ const SidebarOtherSettings: React.FC = () => {
                                 <SidebarMenuItem><SidebarMenuButton className="p-5" asChild isActive={isActive}><div className="font-bold"><Home size={24} strokeWidth={3} /><span>Workspace</span></div></SidebarMenuButton></SidebarMenuItem>
                             }
                         </NavLink>
-                        {user && (
+                        <SignedInJWT>
                             <SidebarMenuItem>
                                 <Dialog
                                     open={open}
@@ -96,7 +99,7 @@ const SidebarOtherSettings: React.FC = () => {
                                     </DialogContent>
                                 </Dialog>
                             </SidebarMenuItem>
-                        )}
+                        </SignedInJWT>
                     </SidebarMenu>
                 </SidebarGroupContent>
             </SidebarGroup>

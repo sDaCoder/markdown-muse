@@ -23,13 +23,17 @@ const normalizeNote = (note) => {
     }
 }
 
+const authRequestConfig = {
+    withCredentials: true,
+}
+
 export const notifyUserTextsChanged = () => {
     window.dispatchEvent(new CustomEvent(USER_TEXTS_CHANGED_EVENT))
 }
 
 export const getAllUserTexts = async (userID) => {
     const resolvedUserId = resolveUserId(userID)
-    const res = await axios.get(`${baseURL}/${resolvedUserId}`)
+    const res = await axios.get(`${baseURL}/${resolvedUserId}`, authRequestConfig)
     return {
         ...res,
         data: {
@@ -40,7 +44,7 @@ export const getAllUserTexts = async (userID) => {
 
 export const getLatest3UserTexts = async (userID) => {
     const resolvedUserId = resolveUserId(userID)
-    const res = await axios.get(`${baseURL}/latest3/${resolvedUserId}`)
+    const res = await axios.get(`${baseURL}/latest3/${resolvedUserId}`, authRequestConfig)
     return {
         ...res,
         data: {
@@ -51,7 +55,7 @@ export const getLatest3UserTexts = async (userID) => {
 
 export const getUserText = async (userID, textID) => {
     const resolvedUserId = resolveUserId(userID)
-    const res = await axios.get(`${baseURL}/${resolvedUserId}/${textID}`)
+    const res = await axios.get(`${baseURL}/${resolvedUserId}/${textID}`, authRequestConfig)
     return {
         ...res,
         data: {
@@ -68,7 +72,7 @@ export const addNewUserText = async (
     const res = await axios.post(`${baseURL}/${resolvedUserId}`, {
         textTitle,
         text
-    })
+    }, authRequestConfig)
     return {
         ...res,
         data: normalizeNote(res.data),
@@ -80,7 +84,7 @@ export const updateUserText = async (userID, editId, textTitle, text) => {
     if (textTitle !== undefined) updatedTextobj.textTitle = textTitle
     if (text !== undefined) updatedTextobj.text = text
     const resolvedUserId = resolveUserId(userID)
-    const res = await axios.patch(`${baseURL}/${resolvedUserId}/${editId}`, updatedTextobj)
+    const res = await axios.patch(`${baseURL}/${resolvedUserId}/${editId}`, updatedTextobj, authRequestConfig)
     return {
         ...res,
         data: normalizeNote(res.data),
@@ -89,5 +93,5 @@ export const updateUserText = async (userID, editId, textTitle, text) => {
 
 export const deleteUserText = async (userID, textID) => {
     const resolvedUserId = resolveUserId(userID)
-    return axios.delete(`${baseURL}/${resolvedUserId}/${textID}`)
+    return axios.delete(`${baseURL}/${resolvedUserId}/${textID}`, authRequestConfig)
 }

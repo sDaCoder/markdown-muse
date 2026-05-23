@@ -1,10 +1,13 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useUser } from '@clerk/clerk-react'
 import { Clock3, FileText, PencilLine, Plus, Sparkles } from 'lucide-react'
 import { toast } from 'sonner'
-import { addNewUserText, getLatest3UserTexts } from '../userTextAPI'
+import { addNewUserText, getLatest3UserTexts, notifyUserTextsChanged } from '../userTextAPI'
 import { Button } from '../components/ui/button'
+import { AuthContext } from '../context/AuthContext'
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../components/ui/dialog'
+import { Input } from '../components/ui/input'
+import { Label } from '../components/ui/label'
 
 const formatUpdatedAt = (value) => {
   if (!value) return 'No activity yet'
@@ -37,14 +40,20 @@ const sortByLastSaved = (notes) =>
 
 const EditorHome = () => {
   const navigate = useNavigate()
-  const { user, isLoaded, isSignedIn } = useUser()
+  const auth = useContext(AuthContext)
   const [notes, setNotes] = useState([])
   const [isFetching, setIsFetching] = useState(true)
   const [isCreating, setIsCreating] = useState(false)
+  const [createDialogOpen, setCreateDialogOpen] = useState(false)
+  const [title, setTitle] = useState('Untitled Text')
+  const inputRef = useRef(null)
+
+  const user = auth?.user ?? null
+  const userLoading = auth?.userLoading ?? true
 
   useEffect(() => {
-    if (!isLoaded) return
-    if (!isSignedIn || !user?.id) {
+    if (userLoading) return
+    if (!user?.id) {
       setIsFetching(false)
       return
     }
@@ -63,7 +72,7 @@ const EditorHome = () => {
     }
 
     loadNotes()
-  }, [isLoaded, isSignedIn, user?.id])
+  }, [userLoading, user?.id])
 
   const featuredNote = notes[0]
 
@@ -78,13 +87,17 @@ const EditorHome = () => {
     }
   }, [featuredNote, notes])
 
-  const handleCreateNote = async () => {
+  const handleCreateNote = async (event) => {
+    event.preventDefault()
     if (!user?.id) return
 
     setIsCreating(true)
     try {
-      const res = await addNewUserText(user.id, 'Untitled Text', '')
-      toast.success('New note created')
+      const res = await addNewUserText(user.id, title, '')
+      setCreateDialogOpen(false)
+      setTitle('Untitled Text')
+      notifyUserTextsChanged()
+      toast.success(`New markdown created! ${res.data.textTitle}`)
       navigate(`/editor/${res.data._id}`)
     } catch (error) {
       toast.error('Failed to create a new note')
@@ -117,15 +130,57 @@ const EditorHome = () => {
             </div>
 
             <div className="flex flex-col gap-3 sm:flex-row">
-              <Button
-                size="lg"
-                className="transition-transform duration-200 hover:-translate-y-0.5"
-                onClick={handleCreateNote}
-                disabled={isCreating}
+              <Dialog
+                open={createDialogOpen}
+                onOpenChange={(value) => {
+                  setCreateDialogOpen(value)
+                  if (!value) {
+                    setTitle('Untitled Text')
+                  } else {
+                    setTimeout(() => {
+                      inputRef.current?.focus()
+                    }, 100)
+                  }
+                }}
               >
-                <Plus className="size-4" />
-                {isCreating ? 'Creating...' : 'New note'}
-              </Button>
+                <DialogTrigger asChild>
+                  <Button
+                    size="lg"
+                    className="transition-transform duration-200 hover:-translate-y-0.5"
+                  >
+                    <Plus className="size-4" />
+                    New note
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleCreateNote}>
+                    <DialogHeader>
+                      <DialogTitle className="py-4">
+                        Enter your Markdown title
+                      </DialogTitle>
+                    </DialogHeader>
+                    <div className="flex items-center space-x-2">
+                      <div className="grid flex-1 gap-2">
+                        <Label htmlFor="editor-home-title" className="sr-only">
+                          Add Page Title
+                        </Label>
+                        <Input
+                          id="editor-home-title"
+                          ref={inputRef}
+                          value={title}
+                          onChange={(event) => setTitle(event.target.value)}
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter className="py-4">
+                      <Button type="submit" disabled={isCreating}>
+                        {isCreating ? 'Creating...' : 'Save Title'}
+                      </Button>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
               {featuredNote && (
                 <Button
                   variant="outline"
@@ -199,10 +254,54 @@ const EditorHome = () => {
                 <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">
                   Start a fresh markdown note and it will appear here with its title, preview, and last saved time.
                 </p>
-                <Button className="mt-6" onClick={handleCreateNote} disabled={isCreating}>
-                  <Plus className="size-4" />
-                  Create your first note
-                </Button>
+                <Dialog
+                  open={createDialogOpen}
+                  onOpenChange={(value) => {
+                    setCreateDialogOpen(value)
+                    if (!value) {
+                      setTitle('Untitled Text')
+                    } else {
+                      setTimeout(() => {
+                        inputRef.current?.focus()
+                      }, 100)
+                    }
+                  }}
+                >
+                  <DialogTrigger asChild>
+                    <Button className="mt-6">
+                      <Plus className="size-4" />
+                      Create your first note
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <form onSubmit={handleCreateNote}>
+                      <DialogHeader>
+                        <DialogTitle className="py-4">
+                          Enter your Markdown title
+                        </DialogTitle>
+                      </DialogHeader>
+                      <div className="flex items-center space-x-2">
+                        <div className="grid flex-1 gap-2">
+                          <Label htmlFor="editor-home-empty-title" className="sr-only">
+                            Add Page Title
+                          </Label>
+                          <Input
+                            id="editor-home-empty-title"
+                            ref={inputRef}
+                            value={title}
+                            onChange={(event) => setTitle(event.target.value)}
+                            autoFocus
+                          />
+                        </div>
+                      </div>
+                      <DialogFooter className="py-4">
+                        <Button type="submit" disabled={isCreating}>
+                          {isCreating ? 'Creating...' : 'Save Title'}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
               </div>
             ) : (
               <div className="grid gap-3">

@@ -2,7 +2,7 @@ import { TextModelSQL } from "../models/TextModelSQL.js";
 import { UserModelSQL } from "../models/UserModelSQL.js";
 
 export const getAllNotes = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
     try {
         const notes = await TextModelSQL.findAll({ where: { userId } });
         res.json(notes);
@@ -13,7 +13,8 @@ export const getAllNotes = async (req, res) => {
 }
 
 export const getNoteById = async (req, res) => {
-    const { userId, textId } = req.params;
+    const userId = req.user.id;
+    const { textId } = req.params;
     try {
         const note = await TextModelSQL.findOne({ where: { userId, textId } });
         if (note) {
@@ -28,7 +29,7 @@ export const getNoteById = async (req, res) => {
 }
 
 export const createNote = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
     const { textTitle, text } = req.body;
     try {
         const user = await UserModelSQL.findByPk(userId);
@@ -44,7 +45,8 @@ export const createNote = async (req, res) => {
 }
 
 export const updateNote = async (req, res) => {
-    const { userId, textId } = req.params;
+    const userId = req.user.id;
+    const { textId } = req.params;
     const { textTitle, text } = req.body;
     try {
         const note = await TextModelSQL.findOne({ where: { userId, textId } });
@@ -62,7 +64,8 @@ export const updateNote = async (req, res) => {
 }
 
 export const deleteNote = async (req, res) => {
-    const { userId, textId } = req.params;
+    const userId = req.user.id;
+    const { textId } = req.params;
     try {
         const note = await TextModelSQL.findOne({ where: { userId, textId } });
         if (!note) {
@@ -77,7 +80,7 @@ export const deleteNote = async (req, res) => {
 }
 
 export const getLatest3Notes = async (req, res) => {
-    const { userId } = req.params;
+    const userId = req.user.id;
     try {
         const notes_latest3 = await TextModelSQL.findAll({
             where: { userId },

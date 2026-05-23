@@ -44,23 +44,45 @@ const protect = (req, res, next) => {
     }
 }
 
+app.get('/status', (req, res) => {
+    const accessToken = req.cookies.accessToken;
+
+    if (!accessToken) {
+        return res.status(200).json({ loggedIn: false });
+    }
+
+    try {
+        const decoded = jwt.verify(
+            accessToken,
+            process.env.ACCESS_TOKEN_SECRET
+        );
+
+        return res.status(200).json({
+            loggedIn: true,
+            user: decoded
+        });
+    } catch (error) {
+        return res.status(200).json({ loggedIn: false });
+    }
+})
+
 app.route('/notes/latest3/:userId')
-    .get(getLatest3Notes)
-    // .get(protect, getLatest3Notes)
+    // .get(getLatest3Notes)
+    .get(protect, getLatest3Notes)
 
 app.route('/notes/:userId')
-    .get(getAllNotes)
-    .post(createNote)
-    // .get(protect, getAllNotes)
-    // .post(protect, createNote)
+    // .get(getAllNotes)
+    // .post(createNote)
+    .get(protect, getAllNotes)
+    .post(protect, createNote)
 
 app.route('/notes/:userId/:textId')
-    .get(getNoteById)
-    .patch(updateNote)
-    .delete(deleteNote)
-    // .get(protect, getNoteById)
-    // .patch(protect, updateNote)
-    // .delete(protect, deleteNote)
+    // .get(getNoteById)
+    // .patch(updateNote)
+    // .delete(deleteNote)
+    .get(protect, getNoteById)
+    .patch(protect, updateNote)
+    .delete(protect, deleteNote)
 
 app.post('/register', async (req, res) => {
     try {
@@ -140,6 +162,38 @@ app.post('/login', async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({ message: error.message });
+    }
+})
+
+app.post('/logout', async (req, res) => {
+    const refreshToken = req.cookies.refreshToken;
+
+    try {
+        if (refreshToken) {
+            const existingUser = await UserModelSQL.findOne({ where: { refreshToken } });
+
+            if (existingUser) {
+                existingUser.refreshToken = null;
+                await existingUser.save();
+            }
+        }
+
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        });
+
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: false,
+            sameSite: "lax"
+        });
+
+        return res.status(200).json({ message: "User logged out successfully" });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message: error.message });
     }
 })
 
