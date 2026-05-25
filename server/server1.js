@@ -1,13 +1,12 @@
 import express from 'express';
 import cors from 'cors';
-import bycrypt from "bcryptjs"
-import jwt from "jsonwebtoken"
 import { sequelize } from './dbConfigSQL.js';
 import { UserModelSQL } from './models/UserModelSQL.js';
 import { TextModelSQL } from './models/TextModelSQL.js';
 import { createNote, deleteNote, getAllNotes, getLatest3Notes, getNoteById, updateNote } from './controllers/textSQL.js';
-import { generateAccessToken, generateRefreshToken } from './utils/generateTokens.js';
 import cookieParser from 'cookie-parser';
+import { protect } from './middlewares/protectUser.js';
+import { loginUser, logoutUser, registerUser, userLoginStatus } from './controllers/userSQL.js';
 
 const app = express();
 const PORT = 8001;
@@ -23,179 +22,22 @@ app.use(cookieParser())
 sequelize.sync()
 UserModelSQL.hasMany(TextModelSQL, { foreignKey: "userId" });
 
-const protect = (req, res, next) => {
-
-    const accessToken = req.cookies.accessToken
-
-    if(!accessToken) {
-        return res.status(401).json({ message: "Unauthorized" })
-    }
-
-    try {
-        const decoded = jwt.verify(
-            accessToken,
-            process.env.ACCESS_TOKEN_SECRET
-        )
-        req.user = decoded
-        next()
-    } catch (error) {
-        console.log(error);
-        return res.status(401).json({ message: error.message })
-    }
-}
-
-app.get('/status', (req, res) => {
-    const accessToken = req.cookies.accessToken;
-
-    if (!accessToken) {
-        return res.status(200).json({ loggedIn: false });
-    }
-
-    try {
-        const decoded = jwt.verify(
-            accessToken,
-            process.env.ACCESS_TOKEN_SECRET
-        );
-
-        return res.status(200).json({
-            loggedIn: true,
-            user: decoded
-        });
-    } catch (error) {
-        return res.status(200).json({ loggedIn: false });
-    }
-})
+app.post('/register', registerUser)
+app.post('/login', loginUser)
+app.post('/logout', logoutUser)
+app.get('/status', userLoginStatus)
 
 app.route('/notes/latest3/:userId')
-    // .get(getLatest3Notes)
     .get(protect, getLatest3Notes)
 
 app.route('/notes/:userId')
-    // .get(getAllNotes)
-    // .post(createNote)
     .get(protect, getAllNotes)
     .post(protect, createNote)
 
 app.route('/notes/:userId/:textId')
-    // .get(getNoteById)
-    // .patch(updateNote)
-    // .delete(deleteNote)
     .get(protect, getNoteById)
     .patch(protect, updateNote)
     .delete(protect, deleteNote)
-
-app.post('/register', async (req, res) => {
-    try {
-        const { name, email, password } = req.body;
-
-        const existingUser = await UserModelSQL.findOne({ where: { email } });
-        if(existingUser) {
-            return res.status(400).json({ message: "User already exists" });
-        }
-
-        const hashedPassword = await bycrypt.hash(password, 10);
-        const newUser = await UserModelSQL.create({ name, email, passwordHash: hashedPassword });
-
-        const accessToken = generateAccessToken(newUser)
-        const refreshToken = generateRefreshToken(newUser)
-
-        newUser.refreshToken = refreshToken;
-        await newUser.save();
-        
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        })
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        })
-
-        res.status(200).json({ message: "User registered successfully" });
-
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: error.message });
-    }
-})
-
-app.post('/login', async (req, res) => { 
-    const { email, password } = req.body;
-
-    try {
-        const existingUser = await UserModelSQL.findOne({ where: { email } });
-        if(!existingUser) {
-            return res.status(400).json({ message: "Create an account to login" });
-        }
-
-        const isMatch = await bycrypt.compare(
-            password,
-            existingUser.passwordHash
-        )
-
-        if(!isMatch){
-            return res.status(400).json({ message: "Invalid credentials" });
-        }
-
-        const accessToken = generateAccessToken(existingUser)
-        const refreshToken = generateRefreshToken(existingUser)
-
-        existingUser.refreshToken = refreshToken;
-        await existingUser.save();
-
-        res.cookie("accessToken", accessToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        })
-
-        res.cookie("refreshToken", refreshToken, {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        })
-
-        res.status(200).json({ message: "User logged in successfully" });
-    } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: error.message });
-    }
-})
-
-app.post('/logout', async (req, res) => {
-    const refreshToken = req.cookies.refreshToken;
-
-    try {
-        if (refreshToken) {
-            const existingUser = await UserModelSQL.findOne({ where: { refreshToken } });
-
-            if (existingUser) {
-                existingUser.refreshToken = null;
-                await existingUser.save();
-            }
-        }
-
-        res.clearCookie("accessToken", {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        });
-
-        res.clearCookie("refreshToken", {
-            httpOnly: true,
-            secure: false,
-            sameSite: "lax"
-        });
-
-        return res.status(200).json({ message: "User logged out successfully" });
-    } catch (error) {
-        console.log(error);
-        return res.status(500).json({ message: error.message });
-    }
-})
 
 app.listen(PORT, async () => {
     console.log(`Server is running on http://localhost:${PORT}`);
